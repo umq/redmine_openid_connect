@@ -11,6 +11,7 @@ module RedmineOpenidConnect
 
     def view_layouts_base_body_bottom(context={})
       return unless OicSession.enabled?
+      return if OicSession.dynamic_config['check_session_iframe'].nil?
       oic_session = OicSession.find context[:request].session[:oic_session_id]
       context[:oic_session] = oic_session
       context[:controller].send(:render_to_string, {
