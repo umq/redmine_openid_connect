@@ -30,7 +30,7 @@ module RedmineOpenidConnect
       oic_session.destroy
       logout_user
       reset_session
-      redirect_to oic_session.end_session_url
+      redirect_to oic_session.end_session_url if oic_session.end_session_url
     rescue ActiveRecord::RecordNotFound => e
       redirect_to oic_local_logout_url
     end
@@ -105,11 +105,22 @@ module RedmineOpenidConnect
         if user.nil?
           user = User.new
 
-          user.login = user_info["preferred_username"]
+          user.login = user_info["preferred_username"] || user_info["nickname"]
+
+          firstname = user_info["given_name"]
+          lastname = user_info["family_name"]
+
+          if (firstname.nil? || lastname.nil?) && user_info["name"]
+            parts = user_info["name"].split
+            if parts.length >= 2
+              firstname = parts[0]
+              lastname = parts[-1]
+            end
+          end
 
           attributes = {
-            firstname: user_info["given_name"],
-            lastname: user_info["family_name"],
+            firstname: firstname || "",
+            lastname: lastname || "",
             mail: user_info["email"],
             mail_notification: 'only_my_events',
             last_login_on: Time.now
