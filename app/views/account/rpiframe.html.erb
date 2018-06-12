@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>PMGov - RP iframe</title>
-  <script type="text/javascript" src="<%= oic_sha256_url %>"></script>
+  <%= javascript_include_tag "sha256.js", :plugin => "redmine_openid_connect" %>
   <script type="text/javascript">
     var stat = "unchanged";
     var client_id = "<%= @oic_session.client_config['client_id'] %>";
